@@ -1,0 +1,100 @@
+﻿# Skompilowane pliki binarne
+server
+run_tests
+*.exe
+*.out
+*.app
+
+# Pliki obiektowe
+*.o
+*.obj
+*.ko
+*.elf
+
+# Biblioteki
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# CMake build directory
+build/
+cmake-build-*/
+out/
+
+# CMake cache i pliki tymczasowe
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# IDE - Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IDE - CLion
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# IDE - Visual Studio
+.vs/
+*.user
+*.suo
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# IDE - Xcode
+*.xcodeproj/
+*.xcworkspace/
+
+# Debugger
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Profiling
+gmon.out
+callgrind.out.*
+*.gcda
+*.gcno
+*.gcov
+
+# Logs
+*.log
+
+# Core dumps
+core
+core.*
+
+# Temporary files
+*~
+*.swp
+*.swo
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Python (jeśli masz testy w Pythonie)
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+
+# Valgrind
+vgcore.*
+*.memcheck
+
+# Coverage
+*.coverage
+htmlcov/
