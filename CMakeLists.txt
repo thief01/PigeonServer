@@ -8,7 +8,12 @@ file(GLOB SOURCES "src/*.cpp")
 # Lub rekurencyjnie:
 # file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-add_executable(Pigeon ${SOURCES})
+add_executable(Pigeon
+        src/main.cpp
+        src/Core/Config.cpp
+        src/Core/ServerCore.cpp
+)
+
 
 # ASIO
 set(ASIO_PATH "D:/libs/asio-1.36.0/include")
