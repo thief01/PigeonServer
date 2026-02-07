@@ -2,28 +2,62 @@
 import struct
 import time
 
+MAX_PACKET_SIZE = 1024
+
+
 HOST = "127.0.0.1"
 PORT = 12345
 
-# ===== PlayerState =====
-player_id = 1
-x, y, z = 10.0, 20.0, 30.0
+DATA_PACKET_FORMAT = f"<IIII{MAX_PACKET_SIZE}s"
+DATA_PACKET_SIZE = struct.calcsize(DATA_PACKET_FORMAT)
+HEADER_FORMAT = "<BI"   # B = uint8, I = uint32 (little endian)
+HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
 
-packet_type = 1
 
-# body: int32 + 3 float32
-body = struct.pack("<ifff", player_id, x, y, z)  # 16 bajtów
+def send_data_packet(sock, owner_id, data_type, payload: bytes):
+    payload = payload[:MAX_PACKET_SIZE]
+    payload_padded = payload.ljust(MAX_PACKET_SIZE, b'\x00')
 
-# header: uint8 + uint32 (little endian)
-header = struct.pack("<BI", packet_type, len(body))  # 1 + 4 = 5 bajtów
+    timestamp = int(time.time())
+    data_size = len(payload)
 
-packet = header + body
+    # body
+    body = struct.pack(
+        DATA_PACKET_FORMAT,
+        owner_id,
+        data_type,
+        timestamp,
+        data_size,
+        payload_padded
+    )
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    print("Connected")
+    # header
+    header = struct.pack(
+        HEADER_FORMAT,
+        1,                 # packetType = 1 (DataPacket)
+        len(body)          # bodySize
+    )
 
-    s.sendall(packet)
-    print("Packet sent")
+    sock.sendall(header + body)
 
-    time.sleep(2)  # NIE zamykaj od razu
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect(("127.0.0.1", 12345))  # port z configu
+
+send_data_packet(
+    sock,
+    owner_id=1,
+    data_type=42,
+    payload=b"Hello from Python!"
+)
+
+time.sleep(2)
+
+
+# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+#     s.connect((HOST, PORT))
+#     print("Connected")
+#
+#     s.sendall(packet)
+#     print("Packet sent")
+#
+#     time.sleep(2)  # NIE zamykaj od razu
