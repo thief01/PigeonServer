@@ -1,10 +1,16 @@
 #include <thread>
 #include "Core/ServerCore.h"
+#include "Core/Logger/Logger.h"
 
 int main() {
+    Logger::instance().start();
+    LOG_INFO("LOGGER")
+
     asio::io_context io;
     Config config = Config("config.ini");
     Server server(io, config);
+
+
 
     // Asio async w osobnym wątku
     std::thread asioThread([&io]() { io.run(); });

@@ -12,6 +12,9 @@ add_executable(Pigeon
         src/main.cpp
         src/Core/Config.cpp
         src/Core/ServerCore.cpp
+        src/Core/Logger/Logger.cpp
+        src/Core/Logger/Logger.h
+        src/Core/ClientSession.h
 )
 
 
