@@ -2,25 +2,21 @@
 #include <asio.hpp>
 #include <vector>
 #include <memory>
+#include <mutex>
 #include <cstdint>
-
-#pragma pack(push, 1)
-struct PlayerState {
-    int32_t id;
-    float x, y, z;
-};
-#pragma pack(pop)
 
 class Server {
 public:
     Server(asio::io_context& io, uint16_t port);
-
-    void tick(); // tick loop, np. update world
+    void tick();
 
 private:
     void start_accept();
+    void cleanup_dead_clients();
 
-    asio::io_context& io_ctx;  // <-- referencja do io_context
+    asio::io_context& io_ctx;
     asio::ip::tcp::acceptor acceptor;
+
     std::vector<std::shared_ptr<asio::ip::tcp::socket>> clients;
+    std::mutex clients_mutex;  // <-- WYMAGANE
 };

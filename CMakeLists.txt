@@ -3,16 +3,19 @@ project(Pigeon)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Pigeon src/main.cpp
-        src/ServerCore.h
-        src/ServerCore.cpp
-        src/PlayerState.h)
+# Automatycznie znajdź wszystkie .cpp
+file(GLOB SOURCES "src/*.cpp")
+# Lub rekurencyjnie:
+# file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-# Ścieżka do folderu zawierającego asio.hpp
+add_executable(Pigeon ${SOURCES})
+
+# ASIO
 set(ASIO_PATH "D:/libs/asio-1.36.0/include")
-
-# Dodajemy do include path dla targetu Pigeon
-target_include_directories(Pigeon PRIVATE ${ASIO_PATH})
-
-# Mówimy Asio, że standalone
+target_include_directories(Pigeon PRIVATE src ${ASIO_PATH})
 target_compile_definitions(Pigeon PRIVATE ASIO_STANDALONE _WIN32_WINNT=0x0A00)
+
+# Windows
+#if(WIN32)
+#    target_link_libraries(Pigeon ws2_32 wsock32 mswsock)
+#endif()
