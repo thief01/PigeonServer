@@ -4,7 +4,6 @@
 
 int main() {
     Logger::instance().start();
-    LOG_INFO("LOGGER")
 
     asio::io_context io;
     Config config = Config("config.ini");
