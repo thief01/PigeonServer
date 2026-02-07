@@ -1,5 +1,5 @@
 #include <thread>
-#include "ServerCore.h"
+#include "../ServerCore.h"
 
 int main() {
     asio::io_context io;

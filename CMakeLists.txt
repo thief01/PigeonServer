@@ -3,10 +3,10 @@ project(Pigeon)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Pigeon main.cpp
-        ServerCore.h
-        ServerCore.cpp
-        PlayerState.h)
+add_executable(Pigeon src/main.cpp
+        src/ServerCore.h
+        src/ServerCore.cpp
+        src/PlayerState.h)
 
 # Ścieżka do folderu zawierającego asio.hpp
 set(ASIO_PATH "D:/libs/asio-1.36.0/include")

@@ -1,4 +1,4 @@
-﻿#include "ServerCore.h"
+﻿#include "../ServerCore.h"
 #include <iostream>
 
 Server::Server(asio::io_context& io, uint16_t port)
