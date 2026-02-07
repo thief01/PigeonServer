@@ -11,10 +11,13 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(Pigeon
         src/main.cpp
         src/Core/Config.cpp
-        src/Core/ServerCore.cpp
+        src/Core/TcpServer.cpp
         src/Core/Logger/Logger.cpp
         src/Core/Logger/Logger.h
         src/Core/ClientSession.h
+        src/Core/Packets/Packet.h
+        src/Core/Packets/DataManager.cpp
+        src/Core/Packets/DataManager.h
 )
 
 

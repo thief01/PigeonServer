@@ -1,5 +1,5 @@
 #include <thread>
-#include "Core/ServerCore.h"
+#include "Core/TcpServer.h"
 #include "Core/Logger/Logger.h"
 
 int main() {
@@ -8,7 +8,7 @@ int main() {
 
     asio::io_context io;
     Config config = Config("config.ini");
-    Server server(io, config);
+    TcpServer server(io, config);
 
 
 
