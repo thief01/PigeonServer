@@ -71,10 +71,6 @@ callgrind.out.*
 # Logs
 *.log
 
-# Core dumps
-core
-core.*
-
 # Temporary files
 *~
 *.swp

@@ -50,7 +50,7 @@ send_data_packet(
     payload=b"Hello from Python!"
 )
 
-time.sleep(2)
+time.sleep(15)
 
 
 # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
