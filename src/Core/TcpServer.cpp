@@ -38,6 +38,13 @@ void TcpServer::Tick() {
     }
 }
 
+void TcpServer::CleanUpDeadClients() {
+    std::lock_guard<std::mutex> lock(clients_mutex);
+    auto rm = std::remove_if(clients.begin(), clients.end(),
+                             [](auto &c) { return !c->isAlive || !c->socket->is_open(); });
+    clients.erase(rm, clients.end());
+}
+
 void TcpServer::OnWrite(std::shared_ptr<ClientSession> client, std::shared_ptr<DataPacket> packet, const asio::error_code &ec, std::size_t bytes) {
     if (ec) {
         LOG_WARN("Client disconnected or read error: " + ec.message());
@@ -49,22 +56,7 @@ void TcpServer::OnWrite(std::shared_ptr<ClientSession> client, std::shared_ptr<D
     SendNextPacket(client);
 }
 
-void TcpServer::SendNextPacket(std::shared_ptr<ClientSession> client) {
-    std::unique_lock<std::mutex> lock(client->sendQueueMutex);
 
-    if (client->sendQueue.empty()) {
-        client->isWriting =false;
-        return;
-    }
-
-    auto packet = client->sendQueue.front();
-    client->sendQueue.pop();
-    lock.unlock();
-
-    client->isWriting = true;
-    auto token = std::bind(&TcpServer::OnWrite, this, client, packet, std::placeholders::_1, std::placeholders::_2);
-    asio::async_write(*client->socket, asio::buffer(packet.get(), sizeof(DataPacket)), token);
-}
 
 void TcpServer::StartAccept() {
     auto socket = std::make_shared<asio::ip::tcp::socket>(io_ctx);
@@ -158,13 +150,6 @@ void TcpServer::OnReadPacketBody(std::shared_ptr<ClientSession> client, uint8_t 
     StartRead(client);
 }
 
-void TcpServer::CleanUpDeadClients() {
-    std::lock_guard<std::mutex> lock(clients_mutex);
-    auto rm = std::remove_if(clients.begin(), clients.end(),
-                             [](auto &c) { return !c->isAlive || !c->socket->is_open(); });
-    clients.erase(rm, clients.end());
-}
-
 void TcpServer::SendFullSnapshot(std::shared_ptr<ClientSession> client) {
 
     auto datas = data_manager_.GetAll();
@@ -178,4 +163,21 @@ void TcpServer::SendFullSnapshot(std::shared_ptr<ClientSession> client) {
     if (!client->isWriting) {
         SendNextPacket(client);
     }
+}
+
+void TcpServer::SendNextPacket(std::shared_ptr<ClientSession> client) {
+    std::unique_lock<std::mutex> lock(client->sendQueueMutex);
+
+    if (client->sendQueue.empty()) {
+        client->isWriting =false;
+        return;
+    }
+
+    auto packet = client->sendQueue.front();
+    client->sendQueue.pop();
+    lock.unlock();
+
+    client->isWriting = true;
+    auto token = std::bind(&TcpServer::OnWrite, this, client, packet, std::placeholders::_1, std::placeholders::_2);
+    asio::async_write(*client->socket, asio::buffer(packet.get(), sizeof(DataPacket)), token);
 }
