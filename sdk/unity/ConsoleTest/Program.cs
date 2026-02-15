@@ -5,11 +5,13 @@ using ConsoleTest;
 
 Console.WriteLine("Hello, World!");
 
-Client.Client client = new Client.Client(new ClientOptions()
+PigeonClient pigeonClient = new PigeonClient(new ClientOptions()
 {
     Logger = new Logger(),
     Host = "127.0.0.1",
     Port = 12345,
 });
 
-await client.ConnectAsync();
+
+await pigeonClient.ConnectAsync();
+await pigeonClient.ReceiveAsync();
