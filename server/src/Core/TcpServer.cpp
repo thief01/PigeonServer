@@ -8,6 +8,7 @@ TcpServer::TcpServer(asio::io_context &io, Config &config)
     : io_ctx(io),
       acceptor(io_ctx, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), config.port)),
       config(config) {
+    isActive = true;
     StartAccept();
     LOG_INFO("Server started!");
 }
@@ -23,7 +24,7 @@ void TcpServer::Tick() {
 
         auto datas = data_manager_.GetDirtyData();
 
-        if (datas.empty()) continue;;
+        if (datas.empty()) continue;
 
         {
             std::lock_guard<std::mutex> qlock(client->sendQueueMutex);

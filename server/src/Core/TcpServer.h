@@ -11,6 +11,7 @@
 
 class TcpServer {
 public:
+    bool isActive = false;
     TcpServer(asio::io_context& io, Config& port);
     void Tick();
 

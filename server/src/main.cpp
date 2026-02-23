@@ -11,7 +11,7 @@ int main() {
 
     std::thread asioThread([&io]() { io.run(); });
 
-    while (true) {
+    while (server.isActive){
         server.Tick();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000 / config.tickRate));
     }
