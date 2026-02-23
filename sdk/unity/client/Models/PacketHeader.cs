@@ -37,7 +37,7 @@ namespace Client.Models
         {
             Console.WriteLine($"dataSize: {DATA_SIZE}"); // debug
     
-            if (DATA_SIZE <= 0 || DATA_SIZE > 255)
+            if (DATA_SIZE <= 0 || DATA_SIZE > DATA_SIZE)
                 throw new Exception($"Invalid dataSize: {DATA_SIZE}");
         
             fixed (byte* ptr = payload)
