@@ -56,8 +56,6 @@ void TcpServer::OnWrite(std::shared_ptr<ClientSession> client, std::shared_ptr<D
     SendNextPacket(client);
 }
 
-
-
 void TcpServer::StartAccept() {
     auto socket = std::make_shared<asio::ip::tcp::socket>(io_ctx);
     auto token =std::bind(&TcpServer::OnAccept, this, socket, std::placeholders::_1);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -16,8 +17,8 @@ namespace Client
         public bool Connected => tcpClient.Connected;
         public Action OnConnected;
         
-        private Queue<byte[]> sendQueue = new Queue<byte[]>();
-        private Queue<byte[]> receiveQueue = new Queue<byte[]>();
+        private ConcurrentQueue<byte[]> sendQueue = new ConcurrentQueue<byte[]>();
+        private ConcurrentQueue<byte[]> receiveQueue = new ConcurrentQueue<byte[]>();
         
         private TcpClient tcpClient;
         private ClientOptions options;
@@ -56,8 +57,11 @@ namespace Client
             var stream = tcpClient.GetStream();
             while (tcpClient.Connected)
             {
-                var data = sendQueue.Dequeue();
-                await stream.WriteAsync(data, 0,data.Length);
+                if (sendQueue.TryDequeue(out byte[] data))
+                {
+                    await stream.WriteAsync(data, 0,data.Length);
+                    LogWrapper($"Sent: {data.Length}");
+                }
             }
         }
 
@@ -75,6 +79,7 @@ namespace Client
                     break;
                 }
                 
+                LogWrapper("Received: " + bytesRead);
                 receiveQueue.Enqueue(buffer);
             }
         }
@@ -91,7 +96,12 @@ namespace Client
 
         public byte[] GetData()
         {
-            return receiveQueue.Dequeue();
+            if (receiveQueue.TryDequeue(out var data))
+            {
+                return data;
+            }
+
+            return Array.Empty<byte>();
         }
 
         private void LogWrapper(string log)

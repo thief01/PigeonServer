@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <array>
 
-constexpr size_t MAX_PACKET_SIZE = 1024;
+constexpr size_t MAX_PACKET_SIZE = 256;
 
 struct PacketKey {
     uint32_t ownerId;
@@ -28,14 +28,12 @@ struct PacketKeyHash {
 #pragma pack(push, 1)
 struct PacketHeader {
     uint8_t packetType;
-    uint32_t bodySize;
 };
 
 struct DataPacket {
     uint32_t ownerId;
     uint32_t dataType;
     uint32_t timeStamp;
-    uint32_t dataSize;
     std::array<uint8_t, MAX_PACKET_SIZE> data;
 };
 #pragma pack(pop)
