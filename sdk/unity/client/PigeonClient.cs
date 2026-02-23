@@ -54,6 +54,7 @@ namespace Client
 
         public async Task SendAsync()
         {
+            LogWrapper("Sending loop");
             var stream = tcpClient.GetStream();
             while (tcpClient.Connected)
             {
@@ -62,25 +63,46 @@ namespace Client
                     await stream.WriteAsync(data, 0,data.Length);
                     LogWrapper($"Sent: {data.Length}");
                 }
+                else
+                {
+                    await Task.Delay(1);
+                }
             }
         }
 
         public async Task ReceiveAsync()
         {
+            LogWrapper("Receiving loop");
             var stream = tcpClient.GetStream();
-            var buffer = new byte[1024];
+
+            const int HEADER_SIZE = 1;
+            const int DATA_PACKET_SIZE = 268; // ownerId + dataType + timestamp + payload
+            const int TOTAL_SIZE = HEADER_SIZE + DATA_PACKET_SIZE;
+
+            byte[] buffer = new byte[TOTAL_SIZE];
 
             while (tcpClient.Connected)
             {
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-                if (bytesRead == 0)
+                int received = 0;
+
+                // odbierz dokładnie TOTAL_SIZE bajtów
+                while (received < TOTAL_SIZE)
                 {
-                    LogWrapper("Disconnected");
-                    break;
+                    int n = await stream.ReadAsync(buffer, received, TOTAL_SIZE - received);
+                    if (n == 0)
+                    {
+                        LogWrapper("Disconnected");
+                        return;
+                    }
+                    received += n;
                 }
-                
-                LogWrapper("Received: " + bytesRead);
-                receiveQueue.Enqueue(buffer);
+
+                // teraz mamy cały pakiet w buffer
+                byte[] packetCopy = new byte[TOTAL_SIZE];
+                Array.Copy(buffer, packetCopy, TOTAL_SIZE);
+
+                receiveQueue.Enqueue(packetCopy);
+                LogWrapper("Received full packet: " + TOTAL_SIZE);
             }
         }
         

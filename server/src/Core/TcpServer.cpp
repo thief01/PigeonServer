@@ -151,6 +151,7 @@ void TcpServer::OnReadPacketBody(std::shared_ptr<ClientSession> client, uint8_t 
 
 void TcpServer::SendFullSnapshot(std::shared_ptr<ClientSession> client) {
 
+    LOG_INFO("Sending full snapshot")
     auto datas = data_manager_.GetAll();
     {
         std::lock_guard lock(client->sendQueueMutex);

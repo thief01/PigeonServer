@@ -18,18 +18,18 @@ namespace Client.Models
         public int timeStamp;
         public fixed byte payload[DATA_SIZE];
         
-        public unsafe void SetPayload(string message)
+        public unsafe void SetPayload(string text)
         {
-            var bytes = Encoding.UTF8.GetBytes(message);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(text);
 
-            if (bytes.Length > DATA_SIZE)
-                throw new Exception("Payload too big");
-            
-
-            fixed (byte* dst = payload)
-            fixed (byte* src = bytes)
+            fixed (byte* ptr = payload)
             {
-                Buffer.MemoryCopy(src, dst, DATA_SIZE, bytes.Length);
+                for (int i = 0; i < 256; i++)
+                    ptr[i] = 0;
+
+                int length = Math.Min(bytes.Length, 256);
+                for (int i = 0; i < length; i++)
+                    ptr[i] = bytes[i];
             }
         }
         
