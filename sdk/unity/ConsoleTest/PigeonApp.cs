@@ -1,4 +1,5 @@
-﻿using Client;
+﻿using System.Runtime.InteropServices.ComTypes;
+using Client;
 using Client.Models;
 
 namespace ConsoleTest;
@@ -20,13 +21,16 @@ public class PigeonApp
     public async Task Run()
     {
         await pigeonClient.ConnectAsync();
-        _ = pigeonClient.SendAsync();
-        _ = pigeonClient.ReceiveAsync();
+        var sendAsync = pigeonClient.SendAsync();
+        var receiveAsync= pigeonClient.ReceiveAsync();
         while (pigeonClient.Connected)
         {
             SendData();
             ReceiveData();
         }
+        
+        sendAsync.Wait();
+        receiveAsync.Wait();
     }
 
     private void SendData()
@@ -40,9 +44,10 @@ public class PigeonApp
             packetType = 0x01
         };
 
+        Random r = new Random();
         var packet = new PacketData()
         {
-            ownerId = 1,
+            ownerId = r.Next(0, 1000),
             dataType = 1,
             timeStamp = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
@@ -58,6 +63,7 @@ public class PigeonApp
         Buffer.BlockCopy(packetBytes, 0, finalPacket, headerBytes.Length, packetBytes.Length);
 
         pigeonClient.QueueData(finalPacket);
+        Console.WriteLine($"[SEND] PacketType: {header.packetType}, OwnerId: {packet.ownerId}, DataType: {packet.dataType}, TimeStamp: {packet.timeStamp}, Payload: '{text}'");
     }
 
     private void ReceiveData()

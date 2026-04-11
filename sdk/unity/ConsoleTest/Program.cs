@@ -8,4 +8,4 @@ using Client.Models;
 using ConsoleTest;
 
 PigeonApp pigeonApp = new PigeonApp();
-pigeonApp.Run();
+await pigeonApp.Run();
