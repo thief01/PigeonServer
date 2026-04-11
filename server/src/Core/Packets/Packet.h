@@ -7,8 +7,12 @@
 
 #include <cstdint>
 #include <array>
+#include <string>
 
 constexpr size_t MAX_PACKET_SIZE = 256;
+
+
+
 
 struct PacketKey {
     uint32_t ownerId;
@@ -37,5 +41,9 @@ struct DataPacket {
     std::array<uint8_t, MAX_PACKET_SIZE> data;
 };
 #pragma pack(pop)
+
+std::string GetPacketMessage(DataPacket &packet);
+
+std::string GetWholePacketInfo(DataPacket &packet);
 
 #endif //PIGEON_PACKET_H

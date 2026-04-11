@@ -3,6 +3,7 @@
 #include "Logger/Logger.h"
 #include "Packets/Packet.h"
 #include "ClientSession.h"
+#include "Packets/Packet.h"
 
 TcpServer::TcpServer(asio::io_context &io, Config &config)
     : io_ctx(io),
@@ -178,6 +179,20 @@ void TcpServer::SendNextPacket(std::shared_ptr<ClientSession> client) {
     lock.unlock();
 
     client->isWriting = true;
+    // auto token = std::bind(&TcpServer::OnWrite, this, client, packet, std::placeholders::_1, std::placeholders::_2);
+    // auto message = "PAYLOAD: " + GetPacketMessage(*packet);
+    LOG_INFO(GetWholePacketInfo(*packet));
+
+    PacketHeader header{ 0x01 };
+    auto buf = std::make_shared<std::vector<uint8_t>>(sizeof(PacketHeader) + sizeof(DataPacket));
+    memcpy(buf->data(), &header, sizeof(PacketHeader));
+    memcpy(buf->data() + sizeof(PacketHeader), packet.get(), sizeof(DataPacket));
+
     auto token = std::bind(&TcpServer::OnWrite, this, client, packet, std::placeholders::_1, std::placeholders::_2);
-    asio::async_write(*client->socket, asio::buffer(packet.get(), sizeof(DataPacket)), token);
+
+    asio::async_write(*client->socket, asio::buffer(*buf),
+        [buf, token](auto ec, auto bytes) {
+            token(ec, bytes);
+        });
+    // asio::async_write(*client->socket, asio::buffer(packet.get(), sizeof(DataPacket)), token);
 }

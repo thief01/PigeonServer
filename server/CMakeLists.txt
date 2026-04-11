@@ -4,7 +4,7 @@ project(Pigeon)
 set(CMAKE_CXX_STANDARD 20)
 
 # Automatycznie znajdź wszystkie .cpp
-file(GLOB SOURCES "src/*.cpp")
+#file(GLOB SOURCES "src/*.cpp")
 # Lub rekurencyjnie:
 # file(GLOB_RECURSE SOURCES "src/*.cpp")
 
@@ -15,6 +15,7 @@ add_executable(Pigeon
         src/Core/Logger/Logger.cpp
         src/Core/Logger/Logger.h
         src/Core/ClientSession.h
+        src/Core/Packets/Packet.cpp
         src/Core/Packets/Packet.h
         src/Core/Packets/DataManager.cpp
         src/Core/Packets/DataManager.h
